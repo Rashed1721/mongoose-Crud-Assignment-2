@@ -2,7 +2,7 @@ import { TUser, address, fullName } from './user.interface'
 import { Schema, model } from 'mongoose'
 
 const fullnameSchema = new Schema<fullName>({
-  firastName: {
+  firstName: {
     type: String,
     required: [true, 'first name is required'],
     max: [20, "first name can't be more than 20 character"],
@@ -58,7 +58,17 @@ const userSchema = new Schema<TUser>({
   email: {
     type: String,
     required: [true, '{VALUE} is required'],
+    unique: true,
   },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+  hobbies: [
+    {
+      type: String,
+    },
+  ],
   address: {
     type: addressSchema,
     required: [true, '{VALUE} is required'],

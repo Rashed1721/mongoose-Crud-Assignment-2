@@ -1,5 +1,5 @@
 export type fullName = {
-  firastName: string
+  firstName: string
   lastName: string
 }
 

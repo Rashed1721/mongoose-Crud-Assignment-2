@@ -83,18 +83,18 @@ const updateUser = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       })
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error: error.message,
+      })
     }
-
-    res.status(500).json({
-      success: false,
-      message: 'something went wrong',
-      error: error.message,
-    })
   }
 }
 const deleteUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id
+    const userId = req.params.userId
     const result = await userServices.deleteUser(userId)
 
     res.status(200).json({
@@ -112,12 +112,13 @@ const deleteUser = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       })
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        data: error,
+      })
     }
-    res.status(500).json({
-      success: false,
-      message: 'something went wrong',
-      data: error,
-    })
   }
 }
 

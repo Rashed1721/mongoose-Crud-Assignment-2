@@ -4,8 +4,11 @@ const router = express.Router()
 
 router.post('/create-user', userController.createUser)
 router.get('/alluser', userController.getAllUser)
-router.get('/api/user:id', userController.getSingleUser)
+router.get('/:id', userController.getSingleUser)
+router.get('/api/users/:userId', userController.getOrder)
+router.get('/api/users/:userId/total-price', userController.totalPrice)
 router.put('/api/users/:userId', userController.updateUser)
 router.delete('/:id', userController.deleteUser)
+router.put('/api/users/:userId/orders', userController.AddNewProduct)
 
 export const userRoutes = router

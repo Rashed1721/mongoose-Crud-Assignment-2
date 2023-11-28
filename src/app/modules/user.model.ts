@@ -1,4 +1,4 @@
-import { TUser, address, fullName } from './user.interface'
+import { TUser, UserModel, address, fullName } from './user.interface'
 import { Schema, model } from 'mongoose'
 
 const fullnameSchema = new Schema<fullName>({
@@ -31,7 +31,7 @@ const addressSchema = new Schema<address>({
   },
 })
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: String,
     required: [true, 'Give your userId'],
@@ -92,6 +92,22 @@ const userSchema = new Schema<TUser>({
   ],
 })
 
-const User = model<TUser>('user', userSchema)
+userSchema.pre('find', function (next) {
+  this.select(
+    ' -fullName._id -address._id -password -userId -isActive -hobbies -orders',
+  )
+  next()
+})
+userSchema.pre('findOne', function (next) {
+  this.select(' -_id -fullName._id -address._id -password   -orders')
+  next()
+})
+
+userSchema.statics.isUserExists = function (id: string) {
+  const existingUser = User.findById(id)
+  return existingUser
+}
+
+const User = model<TUser, UserModel>('user', userSchema)
 
 export default User

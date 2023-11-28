@@ -43,7 +43,7 @@ const getAllUser = async (req: Request, res: Response) => {
 }
 const getSingleUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id
+    const userId = req.params.userId
     const result = await userServices.getSingleUser(userId)
 
     res.status(200).json({

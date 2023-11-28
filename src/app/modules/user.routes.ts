@@ -2,9 +2,9 @@ import express from 'express'
 import { userController } from './user.controller'
 const router = express.Router()
 
-router.post('/create-user', userController.createUser)
-router.get('/alluser', userController.getAllUser)
-router.get('/:id', userController.getSingleUser)
+router.post('/api/users', userController.createUser)
+router.get('/api/users', userController.getAllUser)
+router.get('/api/users/:usserId', userController.getSingleUser)
 router.get('/api/users/:userId', userController.getOrder)
 router.get('/api/users/:userId/total-price', userController.totalPrice)
 router.put('/api/users/:userId', userController.updateUser)

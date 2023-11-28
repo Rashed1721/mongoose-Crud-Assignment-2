@@ -4,11 +4,20 @@
 import { Request, Response } from 'express'
 import { userServices } from './user.services'
 import User from './user.model'
+import userSchemaWithJoi from './user.validation'
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body
-    const result = await userServices.createUser(userData)
+    const { error, value } = userSchemaWithJoi.validate(userData)
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: 'validation error',
+        data: error,
+      })
+    }
+    const result = await userServices.createUser(value)
     const { password, ...userWithoutPassword } = result.toObject()
 
     res.status(200).json({
@@ -66,7 +75,15 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId
     const userData = req.body
-    const result = await userServices.updateUser(userId, userData)
+    const { error, value } = userSchemaWithJoi.validate(userData)
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: 'validation error',
+        data: error,
+      })
+    }
+    const result = await userServices.updateUser(userId, value)
     const filteredResult = await User.findById(userId).select('-password')
     res.status(200).json({
       success: true,
@@ -126,7 +143,15 @@ const AddNewProduct = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
     const userData = req.body
-    const result = await userServices.AddNewProduct(id, userData)
+    const { error, value } = userSchemaWithJoi.validate(userData)
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: 'validation error',
+        data: error,
+      })
+    }
+    const result = await userServices.AddNewProduct(id, value)
     res.status(200).json({
       success: true,
       message: 'Order created successfully',

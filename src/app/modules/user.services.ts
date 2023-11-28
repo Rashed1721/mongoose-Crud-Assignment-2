@@ -15,21 +15,17 @@ const getSingleUser = async (id: string) => {
     const result = await User.findById(id)
 
     return result
-  } else {
-    return
   }
 }
 
 const updateUser = async (id: string, userData: TUser) => {
   try {
     if (await User.isUserExists(id)) {
-      const result = await User.findByIdAndUpdate(id, userData, { new: true })
+      const result = User.findByIdAndUpdate(id, userData, { new: true })
       return result
-    } else {
-      throw new Error('missing user2')
     }
   } catch (error) {
-    throw new Error('missing user1')
+    throw new Error('user is missing')
   }
 }
 
@@ -45,14 +41,20 @@ const deleteUser = async (id: string) => {
 }
 
 const AddNewProduct = async (id: string, userData: TUser) => {
-  const addproduct = await User.updateOne(
-    { _id: id },
-    {
-      $push: { orders: userData },
-    },
-    { new: true },
-  )
-  return addproduct
+  try {
+    if (await User.isUserExists(id)) {
+      const addproduct = await User.updateOne(
+        { _id: id },
+        {
+          $push: { orders: userData },
+        },
+        { new: true },
+      )
+      return addproduct
+    }
+  } catch (error) {
+    throw new Error('invalid user')
+  }
 }
 
 const getOrder = async (id: string) => {

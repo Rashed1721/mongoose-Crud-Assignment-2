@@ -39,7 +39,7 @@ const getAllUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'here is all user',
+      message: 'Users fetched successfully!',
       data: result,
     })
   } catch (error: any) {
@@ -57,7 +57,7 @@ const getSingleUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: ' single user successfully',
+      message: 'User fetched successfully!',
       data: result,
     })
   } catch (error: any) {
@@ -71,44 +71,42 @@ const getSingleUser = async (req: Request, res: Response) => {
     })
   }
 }
+
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId
+    const id = req.params.userId
     const userData = req.body
     const { error, value } = userSchemaWithJoi.validate(userData)
     if (error) {
-      res.status(500).json({
-        success: false,
-        message: 'validation error',
-        data: error,
-      })
+      throw error
     }
-    const result = await userServices.updateUser(userId, value)
-    const filteredResult = await User.findById(userId).select('-password')
+
+    const result = await userServices.updateUser(id, value)
+    const filteredResult = await User.findById(id)
     res.status(200).json({
       success: true,
-      message: 'user updated successfully',
       data: filteredResult,
     })
   } catch (error: any) {
-    if (error.message === 'missing user1') {
-      return res.status(404).json({
+    if (error.message === 'user is missing') {
+      res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: 'user not find',
         error: {
           code: 404,
-          description: 'User not found!',
+          description: 'User not found',
         },
       })
     } else {
-      res.status(500).json({
+      res.status(404).json({
         success: false,
-        message: 'something went wrong',
+        message: 'error happend',
         error: error.message,
       })
     }
   }
 }
+
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId
@@ -145,11 +143,7 @@ const AddNewProduct = async (req: Request, res: Response) => {
     const userData = req.body
     const { error, value } = userSchemaWithJoi.validate(userData)
     if (error) {
-      res.status(500).json({
-        success: false,
-        message: 'validation error',
-        data: error,
-      })
+      throw error
     }
     const result = await userServices.AddNewProduct(id, value)
     res.status(200).json({
@@ -158,11 +152,22 @@ const AddNewProduct = async (req: Request, res: Response) => {
       data: null,
     })
   } catch (error: any) {
-    res.status(500).json({
-      success: true,
-      message: 'something went wrong',
-      data: error.message,
-    })
+    if (error.message === 'invalid user') {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      })
+    } else {
+      res.status(500).json({
+        success: true,
+        message: 'something went wrong',
+        data: error.message,
+      })
+    }
   }
 }
 

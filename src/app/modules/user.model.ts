@@ -94,7 +94,7 @@ const userSchema = new Schema<TUser, UserModel>({
 
 userSchema.pre('find', function (next) {
   this.select(
-    ' -fullName._id -address._id -password -userId -isActive -hobbies -orders',
+    '-_id -fullName._id -address._id -password -userId -isActive -hobbies -orders',
   )
   next()
 })

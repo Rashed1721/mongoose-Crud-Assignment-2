@@ -5,6 +5,7 @@ import { Request, Response } from 'express'
 import { userServices } from './user.services'
 import User from './user.model'
 import userSchemaWithJoi from './user.validation'
+import userSchemaWithJoiForUpdate from './user.validationForUpdate'
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -76,7 +77,7 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
     const userData = req.body
-    const { error, value } = userSchemaWithJoi.validate(userData)
+    const { error, value } = userSchemaWithJoiForUpdate.validate(userData)
     if (error) {
       throw error
     }
@@ -141,7 +142,7 @@ const AddNewProduct = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
     const userData = req.body
-    const { error, value } = userSchemaWithJoi.validate(userData)
+    const { error, value } = userSchemaWithJoiForUpdate.validate(userData)
     if (error) {
       throw error
     }

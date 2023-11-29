@@ -58,6 +58,15 @@ const userSchema = new mongoose_1.Schema({
         required: [true, '{VALUE} is required'],
         unique: true,
     },
+    isActive: {
+        type: Boolean,
+        default: false,
+    },
+    hobbies: [
+        {
+            type: String,
+        },
+    ],
     address: {
         type: addressSchema,
         required: [true, '{VALUE} is required'],
@@ -66,18 +75,30 @@ const userSchema = new mongoose_1.Schema({
         {
             productName: {
                 type: String,
-                required: true,
+                // required: true,
             },
             price: {
                 type: Number,
-                required: true,
+                // required: true,
             },
             quantity: {
                 type: Number,
-                required: true,
+                // required: true,
             },
         },
     ],
 });
+userSchema.pre('find', function (next) {
+    this.select('-_id -fullName._id -address._id -password -userId -isActive -hobbies -orders ');
+    next();
+});
+userSchema.pre('findOne', function (next) {
+    this.select(' -_id -fullName._id -address._id -password   -orders ');
+    next();
+});
+userSchema.statics.isUserExists = function (id) {
+    const existingUser = User.findById(id);
+    return existingUser;
+};
 const User = (0, mongoose_1.model)('user', userSchema);
 exports.default = User;

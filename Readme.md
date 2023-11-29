@@ -25,3 +25,10 @@
 #### calculate total price of orders for a specefic users
 
 This was a fun project. By doing this project I have learnt crud very well can appy instence method static method very well.Third party validation libray like joi has benn applied here.With this project my level of understanding of interface model schema controller and services have been very cleared.
+
+#### To Retrive data follow the instruction
+
+Project link: [ link](https://level2-assignment2-kappa.vercel.app/)
+
+To get All-users:
+[ link](https://level2-assignment2-kappa.vercel.app/api/users)

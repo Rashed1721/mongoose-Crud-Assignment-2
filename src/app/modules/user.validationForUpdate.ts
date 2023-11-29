@@ -64,13 +64,16 @@ const userSchemaWithJoiForUpdate = Joi.object({
   isActive: Joi.boolean().default(false).optional(),
   hobbies: Joi.array().items(Joi.string()).optional(),
   address: addressSchemaWithJoi.optional(),
-  orders: Joi.array().items(
-    Joi.object({
-      productName: Joi.string(),
-      price: Joi.number(),
-      quantity: Joi.number(),
-    }),
-  ),
+
+  orders: Joi.array()
+    .optional()
+    .items(
+      Joi.object({
+        productName: Joi.string(),
+        price: Joi.number(),
+        quantity: Joi.number(),
+      }),
+    ),
 })
 
 export default userSchemaWithJoiForUpdate

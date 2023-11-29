@@ -78,15 +78,15 @@ const userSchema = new Schema<TUser, UserModel>({
     {
       productName: {
         type: String,
-        required: true,
+        // required: true,
       },
       price: {
         type: Number,
-        required: true,
+        // required: true,
       },
       quantity: {
         type: Number,
-        required: true,
+        // required: true,
       },
     },
   ],

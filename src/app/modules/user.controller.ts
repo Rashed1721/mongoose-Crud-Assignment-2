@@ -142,11 +142,9 @@ const AddNewProduct = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
     const userData = req.body
-    const { error, value } = userSchemaWithJoiForUpdate.validate(userData)
-    if (error) {
-      throw error
-    }
-    const result = await userServices.AddNewProduct(id, value)
+    console.log(userData)
+
+    const result = await userServices.AddNewProduct(id, userData)
     res.status(200).json({
       success: true,
       message: 'Order created successfully',

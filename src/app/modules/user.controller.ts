@@ -19,12 +19,14 @@ const createUser = async (req: Request, res: Response) => {
       })
     }
     const result = await userServices.createUser(value)
-    const { password, ...userWithoutPassword } = result.toObject()
+    const filteredResult = await User.findById(result._id).select(
+      '-password -fullName._id -address._id',
+    )
 
     res.status(200).json({
       success: true,
       message: 'user created successfully!',
-      data: userWithoutPassword,
+      data: filteredResult,
     })
   } catch (error: any) {
     res.status(500).json({
@@ -142,7 +144,6 @@ const AddNewProduct = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
     const userData = req.body
-    console.log(userData)
 
     const result = await userServices.AddNewProduct(id, userData)
     res.status(200).json({
@@ -174,11 +175,11 @@ const getOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId
     const result = await userServices.getOrder(userId)
-    const filteredResult = await User.findById(userId).select('orders')
+    const filteredResult = await User.findById(userId).select('orders ')
 
     res.status(200).json({
       success: true,
-      message: ' orders retrived successfully',
+      message: ' orders fetched successfully',
       data: filteredResult,
     })
   } catch (error: any) {

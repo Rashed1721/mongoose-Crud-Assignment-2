@@ -1,5 +1,6 @@
-/* eslint-disable no-unused-expressions */
 import { TUser } from './user.interface'
+/* eslint-disable no-unused-expressions */
+
 import User from './user.model'
 
 const createUser = async (userData: TUser) => {
@@ -43,14 +44,20 @@ const deleteUser = async (id: string) => {
 const AddNewProduct = async (id: string, userData: TUser) => {
   try {
     if (await User.isUserExists(id)) {
-      const addproduct = await User.updateOne(
-        { _id: id },
-        {
-          $push: { orders: userData },
-        },
-        { new: true },
-      )
-      return addproduct
+      const existingUser = await User.findById(id)
+      //checking is order is there and is it array or not
+      if (existingUser) {
+        if (existingUser?.orders && Array.isArray(existingUser)) {
+          const addproduct = await User.updateOne(
+            { _id: id },
+            {
+              $push: { orders: userData },
+            },
+            { new: true },
+          )
+          return addproduct
+        }
+      }
     }
   } catch (error) {
     throw new Error('invalid user')

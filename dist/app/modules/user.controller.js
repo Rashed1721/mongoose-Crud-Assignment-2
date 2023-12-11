@@ -29,7 +29,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             });
         }
         const result = yield user_services_1.userServices.createUser(value);
-        const filteredResult = yield user_model_1.default.findById(result._id).select('-password -fullName._id -address._id');
+        const filteredResult = yield user_model_1.default.findById(result._id).select('-password -fullName._id -address._id ');
         res.status(200).json({
             success: true,
             message: 'user created successfully!',
@@ -84,14 +84,14 @@ const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.params.userId;
+        const userId = req.params.userId;
         const userData = req.body;
         const { error, value } = user_validationForUpdate_1.default.validate(userData);
         if (error) {
             throw error;
         }
-        const result = yield user_services_1.userServices.updateUser(id, value);
-        const filteredResult = yield user_model_1.default.findById(id);
+        const result = yield user_services_1.userServices.updateUser(userId, value);
+        const filteredResult = yield user_model_1.default.findOne({ userId }).select('-password -fullName._id -address._id  ');
         res.status(200).json({
             success: true,
             data: filteredResult,
@@ -182,7 +182,7 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const result = yield user_services_1.userServices.getOrder(userId);
-        const filteredResult = yield user_model_1.default.findById(userId).select('orders ');
+        const filteredResult = yield user_model_1.default.findOne({ userId }).select('orders ');
         res.status(200).json({
             success: true,
             message: ' orders fetched successfully',
@@ -215,7 +215,7 @@ const totalPrice = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const result = yield user_services_1.userServices.totalPrice(id);
         res.status(200).json({
             success: true,
-            message: 'TOtal price calculated successfully',
+            message: 'Total price calculated successfully',
             data: {
                 totalPrice: result === null || result === void 0 ? void 0 : result.toFixed(2),
             },

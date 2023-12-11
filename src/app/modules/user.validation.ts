@@ -36,7 +36,7 @@ const addressSchemaWithJoi = Joi.object({
 
 // Define Joi schema for the user
 const userSchemaWithJoi = Joi.object({
-  userId: Joi.string().required().messages({
+  userId: Joi.number().required().messages({
     'string.base': 'User ID must be a string',
     'string.empty': 'User ID cannot be empty',
     'any.required': 'User ID is required',
@@ -64,13 +64,15 @@ const userSchemaWithJoi = Joi.object({
   isActive: Joi.boolean().default(false),
   hobbies: Joi.array().items(Joi.string()),
   address: addressSchemaWithJoi.required(),
-  orders: Joi.array().items(
-    Joi.object({
-      productName: Joi.string().required(),
-      price: Joi.number().required(),
-      quantity: Joi.number().required(),
-    }),
-  ),
+  orders: Joi.array()
+    .items(
+      Joi.object({
+        productName: Joi.string().required(),
+        price: Joi.number().required(),
+        quantity: Joi.number().required(),
+      }),
+    )
+    .optional(),
 })
 
 export default userSchemaWithJoi

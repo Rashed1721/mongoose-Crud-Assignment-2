@@ -12,7 +12,7 @@ export type address = {
 }
 
 export type TUser = {
-  userId: string
+  userId: number
   username: string
   password: string
   fullName: fullName
@@ -21,13 +21,11 @@ export type TUser = {
   isActive: boolean
   hobbies: string[]
   address: address
-  orders?: [
-    {
-      productName: string
-      price: number
-      quantity: number
-    },
-  ]
+  orders?: {
+    productName: string
+    price: number
+    quantity: number
+  }[]
 }
 
 export interface UserModel extends Model<TUser> {

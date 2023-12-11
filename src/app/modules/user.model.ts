@@ -1,5 +1,7 @@
+import config from '../config'
 import { TUser, UserModel, address, fullName } from './user.interface'
 import { Schema, model } from 'mongoose'
+import bcrypt from 'bcrypt'
 
 const fullnameSchema = new Schema<fullName>({
   firstName: {
@@ -33,7 +35,7 @@ const addressSchema = new Schema<address>({
 
 const userSchema = new Schema<TUser, UserModel>({
   userId: {
-    type: String,
+    type: Number,
     required: [true, 'Give your userId'],
     unique: true,
   },
@@ -45,7 +47,6 @@ const userSchema = new Schema<TUser, UserModel>({
   password: {
     type: String,
     required: [true, '{VALUE} is not correct'],
-    unique: true,
   },
   fullName: {
     type: fullnameSchema,
@@ -78,15 +79,15 @@ const userSchema = new Schema<TUser, UserModel>({
     {
       productName: {
         type: String,
-        // required: true,
+        required: true,
       },
       price: {
         type: Number,
-        // required: true,
+        required: true,
       },
       quantity: {
         type: Number,
-        // required: true,
+        required: true,
       },
     },
   ],
@@ -103,8 +104,21 @@ userSchema.pre('findOne', function (next) {
   next()
 })
 
-userSchema.statics.isUserExists = function (id: string) {
-  const existingUser = User.findById(id)
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt))
+  next()
+})
+
+userSchema.pre('deleteOne', async function () {
+  const query = this.getQuery()
+  const isUserExists = await User.findOne(query)
+  if (!isUserExists) {
+    throw new Error('User does not exists')
+  }
+})
+
+userSchema.statics.isUserExists = function (userId: string) {
+  const existingUser = User.findOne({ userId })
   return existingUser
 }
 

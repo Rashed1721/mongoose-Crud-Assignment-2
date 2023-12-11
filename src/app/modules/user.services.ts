@@ -1,7 +1,9 @@
+import bcrypt from 'bcrypt'
 import { TUser } from './user.interface'
 /* eslint-disable no-unused-expressions */
 
 import User from './user.model'
+import config from '../config'
 
 const createUser = async (userData: TUser) => {
   const result = await User.create(userData)
@@ -11,18 +13,24 @@ const getAllUser = async () => {
   const result = await User.find()
   return result
 }
-const getSingleUser = async (id: string) => {
-  if (await User.isUserExists(id)) {
-    const result = await User.findById(id)
+const getSingleUser = async (userId: string) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.findOne({ userId })
 
     return result
   }
 }
 
-const updateUser = async (id: string, userData: TUser) => {
+const updateUser = async (userId: string, userData: TUser) => {
   try {
-    if (await User.isUserExists(id)) {
-      const result = User.findByIdAndUpdate(id, userData, { new: true })
+    if (await User.isUserExists(userId)) {
+      if (userData.password) {
+        userData.password = await bcrypt.hash(
+          userData.password,
+          Number(config.bcrypt_salt),
+        )
+      }
+      const result = User.findOneAndUpdate({ userId }, userData, { new: true })
       return result
     }
   } catch (error) {
@@ -30,10 +38,10 @@ const updateUser = async (id: string, userData: TUser) => {
   }
 }
 
-const deleteUser = async (id: string) => {
+const deleteUser = async (userId: string) => {
   try {
-    if (await User.isUserExists(id)) {
-      const result = await User.deleteOne({ _id: id })
+    if (await User.isUserExists(userId)) {
+      const result = await User.deleteOne({ userId })
       return result
     }
   } catch (error) {
@@ -44,30 +52,24 @@ const deleteUser = async (id: string) => {
 const AddNewProduct = async (id: string, userData: TUser) => {
   try {
     if (await User.isUserExists(id)) {
-      const existingUser = await User.findById(id)
-      //checking is order is there and is it array or not
-      if (existingUser) {
-        if (existingUser?.orders && Array.isArray(existingUser)) {
-          const addproduct = await User.updateOne(
-            { _id: id },
-            {
-              $push: { orders: userData },
-            },
-            { new: true },
-          )
-          return addproduct
-        }
-      }
+      const addproduct = await User.updateOne(
+        { userId: id },
+        {
+          $push: { orders: userData },
+        },
+        { new: true },
+      )
+      return addproduct
     }
   } catch (error) {
     throw new Error('invalid user')
   }
 }
 
-const getOrder = async (id: string) => {
+const getOrder = async (userId: string) => {
   try {
-    if (await User.isUserExists(id)) {
-      const result = await User.findById(id)
+    if (await User.isUserExists(userId)) {
+      const result = await User.findOne({ userId })
       return result
     }
   } catch (error) {
@@ -75,10 +77,10 @@ const getOrder = async (id: string) => {
   }
 }
 
-const totalPrice = async (id: string) => {
+const totalPrice = async (userId: string) => {
   try {
-    if (await User.isUserExists(id)) {
-      const userData = await User.findById(id).select('orders')
+    if (await User.isUserExists(userId)) {
+      const userData = await User.findOne({ userId }).select('orders')
       const orders = userData?.orders
       let sum = 0
       // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
@@ -86,6 +88,7 @@ const totalPrice = async (id: string) => {
         const total = order.price * order.quantity
         sum = sum + total
       })
+
       return sum
     }
   } catch (error) {

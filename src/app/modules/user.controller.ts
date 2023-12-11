@@ -19,8 +19,9 @@ const createUser = async (req: Request, res: Response) => {
       })
     }
     const result = await userServices.createUser(value)
+
     const filteredResult = await User.findById(result._id).select(
-      '-password -fullName._id -address._id',
+      '-password -fullName._id -address._id ',
     )
 
     res.status(200).json({
@@ -77,15 +78,18 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const id = req.params.userId
+    const userId = req.params.userId
     const userData = req.body
     const { error, value } = userSchemaWithJoiForUpdate.validate(userData)
     if (error) {
       throw error
     }
 
-    const result = await userServices.updateUser(id, value)
-    const filteredResult = await User.findById(id)
+    const result = await userServices.updateUser(userId, value)
+    const filteredResult = await User.findOne({ userId }).select(
+      '-password -fullName._id -address._id  ',
+    )
+
     res.status(200).json({
       success: true,
       data: filteredResult,
@@ -175,7 +179,7 @@ const getOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId
     const result = await userServices.getOrder(userId)
-    const filteredResult = await User.findById(userId).select('orders ')
+    const filteredResult = await User.findOne({ userId }).select('orders ')
 
     res.status(200).json({
       success: true,
@@ -205,11 +209,12 @@ const getOrder = async (req: Request, res: Response) => {
 const totalPrice = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId
+
     const result = await userServices.totalPrice(id)
 
     res.status(200).json({
       success: true,
-      message: 'TOtal price calculated successfully',
+      message: 'Total price calculated successfully',
       data: {
         totalPrice: result?.toFixed(2),
       },
